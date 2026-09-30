@@ -40,7 +40,9 @@ Two supported options:
 
 Create the assets from [VIDEO_BRIEFS.md](docs/VIDEO_BRIEFS.md). Put `<lesson-id>.mp4`, matching `.vtt`/`.jpg` files, and optional `<lesson-id>-transcript.txt` in `cubs-baseball-iq/public/videos/`, then rebuild. The app discovers MP4 filenames at build time; restart the dev server after adding one. Uploaded transcripts appear in the lesson; otherwise the written lesson script is used. Draft captions are supplied and should be retimed to the final narration. Missing MP4s do not create empty video players.
 
-The first lesson, **Cover Your Base**, includes a supplied 32-second paper cut video, timed captions, transcript, and a poster extracted from the video. The original MP4 is preserved (720p H.264/AAC, about 3.1 MB, with streaming metadata at the start). Browser checks exercise real playback, caption loading, transcript access, missing-video recovery, and continuing into practice.
+All eight lessons include supplied paper cut videos, timed captions, transcripts, and posters extracted from the videos. The original MP4s are preserved (720p H.264/AAC, approximately 31–34 seconds each). Browser checks exercise real playback, caption loading, transcript access, missing-video recovery, and continuing into practice.
+
+For uploads through GitHub, open `cubs-baseball-iq/public/videos/`, choose **Add file → Upload files**, and commit to `master`. GitHub Actions rebuilds and publishes automatically. The repository-root `videos/` folder is generated output and is refreshed by the build. Allow the workflow to finish, then reload the lesson page to see new media.
 
 ## Code map
 

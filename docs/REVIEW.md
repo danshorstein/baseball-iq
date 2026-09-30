@@ -28,7 +28,7 @@ Personalized inning lineups have been replaced by position practice. Saved lineu
 
 The Node test suite covers all 34 scenarios and their 43 total demo variants across four age templates, both field sizes, and three contact settings. It checks active positions, a single primary fielder, ordered finite timelines, valid answers, deterministic sessions, immutable authored scenarios, rule overrides, forces, settings validation, and blocked storage.
 
-Browser tests use a built single-file app at `/baseball-iq/`. They cover mobile layout, setup persistence, export/import, rule-quiz completion, keyboard interaction, answered-question replay, legacy URL redirects, and all eight lesson intros. The supplied Cover Your Base MP4 is included and checked for real playback, loaded timed captions, transcript access, and failure recovery. No synthetic teaching video is shipped.
+Browser tests use a built single-file app at `/baseball-iq/`. They cover mobile layout, setup persistence, export/import, rule-quiz completion, keyboard interaction, answered-question replay, legacy URL redirects, and all eight lesson intros. All eight supplied MP4s are included with production captions, transcripts, and posters. Cover Your Base also has regression checks for real playback, loaded timed captions, transcript access, and failure recovery. No synthetic teaching video is shipped.
 
 Theme tests check all presets and extreme custom color combinations for text contrast, then exercise pickers, live button/header/SVG styling, persistence, export/import, and both age selectors in the browser. The starter Sharks palette uses charcoal (#222222) and light blue (#7FA8C7), matched approximately to the provided Ponte Vedra Sharks image. These are visual matches, not official brand hex codes.
 
@@ -36,7 +36,7 @@ Build and lint checks run alongside tests. The HTML bundle needs no network requ
 
 ## Next useful additions
 
-1. Add the seven remaining lesson MP4s and retime their captions to the final voiceover. Cover Your Base is integrated with its supplied transcript and timed captions.
+1. Gather feedback from players on the eight video intros and the practice that follows, especially label readability on phones.
 2. Publish verified division profiles for local leagues with a named source, season, and coach review. Avoid naming an age preset after an organization without that verification.
 3. Add stolen-base, uncaught-third-strike, and infield-fly animations tied to the switches already present.
 4. Add score, outs, runner speed, defender arm strength, and batter tendencies when teaching tactical tradeoffs. Explain multiple reasonable plays instead of marking every alternate choice wrong.

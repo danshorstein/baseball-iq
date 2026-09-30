@@ -1,29 +1,11 @@
-WEBVTT
-
-1
-00:00:00.300 --> 00:00:04.637
 A runner on third changes what you watch before the pitch.
 
-2
-00:00:05.300 --> 00:00:09.103
 Think about the outs, the runner, and the time for a throw.
 
-3
-00:00:10.300 --> 00:00:14.473
 A quickly fielded grounder may give you a sure out at first.
 
-4
-00:00:15.300 --> 00:00:19.410
 A slow play may leave the batter safe before you can throw.
 
-5
-00:00:20.300 --> 00:00:24.921
 Then watch the runner and avoid a late throw with no purpose.
 
-6
-00:00:25.401 --> 00:00:28.348
-There is no answer for every grounder.
-
-7
-00:00:28.378 --> 00:00:30.385
-Read this play and choose.
+There is no answer for every grounder. Read this play and choose.
