@@ -1,5 +1,5 @@
 import { ASSIGNMENTS, type Concept } from './assignments';
-import type { LocationKey } from './coordinates';
+import { START_POSITIONS, coord, distance, type LocationKey } from './coordinates';
 import { DEFENSIVE_RULES, HOLD_BALL_RULE, type RuleAssignment } from './defensiveRules';
 import {
   DEFENSIVE_POSITIONS,
@@ -68,7 +68,20 @@ export function resolveScenario(input: ResolveInput): ResolvedPlay {
     }
   }
 
-  const ballHolder = gameState.ballHolder ?? rule.primaryFielder;
+  // Closest player calls it — and it's his ball.
+  let primaryFielder = rule.primaryFielder;
+  if (rule.closestOf && rule.ballLocation) {
+    const ball = coord(rule.ballLocation);
+    primaryFielder = [...rule.closestOf].sort(
+      (p, q) => distance(START_POSITIONS[p], ball) - distance(START_POSITIONS[q], ball),
+    )[0];
+    merged[primaryFielder] = {
+      action: 'FIELD_BALL',
+      explanation: rule.closestExplanation ?? "You're closest — call it!",
+    };
+  }
+
+  const ballHolder = gameState.ballHolder ?? primaryFielder;
   if (input.event === 'NO_PLAY_RUNNERS_STOPPED' && ballHolder) {
     merged[ballHolder] = HOLD_BALL_RULE;
   }
@@ -98,7 +111,7 @@ export function resolveScenario(input: ResolveInput): ResolvedPlay {
     gameState,
     ballLocation: rule.ballLocation,
     ballType: rule.ballType,
-    primaryFielder: rule.primaryFielder,
+    primaryFielder,
     ballHolder,
     assignments,
     notes,

@@ -3,7 +3,7 @@ import { TopBar } from '../components/Layout/TopBar';
 import { PlayerSelector } from '../components/PlayerSelector/PlayerSelector';
 import { QuizRunner, type QuizItem } from '../components/QuizRunner/QuizRunner';
 import { ScorePanel, type QuestionResult } from '../components/ScorePanel/ScorePanel';
-import { buildPracticeSession } from '../baseball/practice';
+import { buildBeforePitchSession, buildPracticeSession } from '../baseball/practice';
 import { POSITION_NAMES } from '../baseball/types';
 import { positionOf } from '../data/lineups';
 import type { Player } from '../data/players';
@@ -12,7 +12,8 @@ import { useApp } from '../state/AppContext';
 
 const ORD = ['1st', '2nd', '3rd', '4th'];
 
-export function Practice() {
+export function Practice({ mode = 'practice' }: { mode?: 'practice' | 'pitch' }) {
+  const pitch = mode === 'pitch';
   const { lineups, namesFor, present } = useApp();
   const [player, setPlayer] = useState<Player | null>(null);
   const [stage, setStage] = useState<'pick' | 'preview' | 'quiz' | 'done'>('pick');
@@ -20,8 +21,8 @@ export function Practice() {
   const [results, setResults] = useState<QuestionResult[]>([]);
 
   const session = useMemo(
-    () => (player ? buildPracticeSession(player.id, lineups, seed) : null),
-    [player, lineups, seed],
+    () => (player ? (pitch ? buildBeforePitchSession : buildPracticeSession)(player.id, lineups, seed) : null),
+    [player, lineups, seed, pitch],
   );
 
   const items: QuizItem[] = useMemo(() => {
@@ -37,7 +38,7 @@ export function Practice() {
 
   return (
     <div className="page">
-      <TopBar back="/" title="Practice My Game" />
+      <TopBar back="/" title={pitch ? 'Before the Pitch' : 'Practice My Game'} />
       {stage === 'pick' && (
         <>
           <h2 className="section-title center">Who's playing?</h2>
@@ -67,7 +68,11 @@ export function Practice() {
           </ul>
           {session.total > 0 ? (
             <>
-              <p className="muted">{session.total} questions about YOUR positions.</p>
+              <p className="muted">
+                {pitch
+                  ? `${session.total} situations. Before each pitch: what's YOUR job?`
+                  : `${session.total} questions about YOUR positions.`}
+              </p>
               <button className="btn btn-red btn-big btn-wide" onClick={() => setStage('quiz')}>
                 Let's practice! ⚾
               </button>

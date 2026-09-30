@@ -65,7 +65,13 @@ export type BallEvent =
   | 'THROW_FIRST'
   | 'THROW_THIRD'
   | 'THROW_HOME'
-  | 'NO_PLAY_RUNNERS_STOPPED';
+  | 'NO_PLAY_RUNNERS_STOPPED'
+  | 'GROUND_BALL_P'
+  | 'GROUND_BALL_C'
+  | 'GAP_LEFT'
+  | 'GAP_RIGHT'
+  | 'POPUP_SS'
+  | 'DEEP_LF';
 
 export type BallType = 'GROUND' | 'LINE' | 'FLY' | 'NONE';
 
@@ -102,4 +108,4 @@ export interface Coordinate {
   y: number;
 }
 
-export type Category = 'COVERAGE' | 'BACKUP' | 'OUTFIELD' | 'DECISION' | 'FORCE_TAG';
+export type Category = 'COVERAGE' | 'BACKUP' | 'OUTFIELD' | 'DECISION' | 'FORCE_TAG' | 'CALL_IT';

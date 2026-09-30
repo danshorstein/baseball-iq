@@ -9,6 +9,7 @@ const GROUPS: { cat: Category; title: string }[] = [
   { cat: 'OUTFIELD', title: 'Outfield & Cutoffs' },
   { cat: 'DECISION', title: 'Hold the Ball' },
   { cat: 'FORCE_TAG', title: 'Force or Tag' },
+  { cat: 'CALL_IT', title: 'Call It!' },
 ];
 
 export function Plays() {

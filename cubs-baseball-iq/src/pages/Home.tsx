@@ -24,6 +24,10 @@ export function Home() {
         <button className="btn btn-red btn-big btn-wide" onClick={() => go('/practice')}>
           ⚾ PRACTICE MY GAME
         </button>
+        <button className="btn btn-outline btn-big btn-wide btn-pitch" onClick={() => go('/before-pitch')}>
+          ⏸ BEFORE THE PITCH
+          <span className="btn-sub">What's my job if it's hit to me?</span>
+        </button>
         <p className="hero-sub">{PRINCIPLES.oneKid}</p>
       </section>
 

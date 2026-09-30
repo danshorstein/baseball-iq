@@ -26,7 +26,8 @@ export type Concept =
   | 'BE_READY'
   | 'HOLD_THE_BALL'
   | 'FORCE_VS_TAG'
-  | 'DONT_CHASE';
+  | 'DONT_CHASE'
+  | 'CALL_IT';
 
 export const CONCEPT_LABELS: Record<Concept, string> = {
   FIELDING_YOUR_BALL: 'Fielding your ball',
@@ -46,6 +47,7 @@ export const CONCEPT_LABELS: Record<Concept, string> = {
   HOLD_THE_BALL: 'Hold the ball',
   FORCE_VS_TAG: 'Force vs tag',
   DONT_CHASE: "Don't chase the ball",
+  CALL_IT: 'Calling the ball',
 };
 
 export interface AssignmentDefinition {

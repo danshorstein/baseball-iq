@@ -245,6 +245,12 @@ export function buildTimeline(resolved: ResolvedPlay, phases: ScenarioPhase[]): 
       if (!(isLast && m.partial)) at = next;
       idx++;
     }
+    // Runner took a few steps off the bag and gets "looked back": return to the base.
+    if (idx === targetIdx && at === m.to) {
+      const spot = RUNNER_BASE_SPOTS[at];
+      const from = endPos(tr);
+      if (distance(from, spot) > 0.3) moveTo(tr, t, spot, distance(from, spot) / SPEED.runner, { ease: 'linear' });
+    }
     runnerAt[m.runner] = at;
   };
 

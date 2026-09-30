@@ -6,6 +6,8 @@ import {
   decisionQuestion,
   destinationQuestion,
   forceTagQuestion,
+  prePitchDestinationQuestion,
+  prePitchQuestion,
   type Question,
 } from './questions';
 import type { DefensivePosition } from './types';
@@ -105,5 +107,56 @@ export function buildPracticeSession(
     }
   }
 
+  return { playerId, rounds: rounds.filter((r) => r.questions.length), total };
+}
+
+/**
+ * BEFORE THE PITCH
+ * For each inning the kid plays: 1–2 "it's hit to YOU, what's the play?"
+ * questions, plus "it's hit over THERE, where do you go?" to fill ~8 total.
+ * Every question is asked with the field frozen before the pitch.
+ */
+export function buildBeforePitchSession(
+  playerId: PlayerId,
+  lineups: DefensiveLineup[],
+  seed = Date.now(),
+): PracticeSession {
+  const rand = rng(seed);
+  const active = lineups
+    .map((l) => ({ inning: l.inning, position: positionOf(l, playerId) }))
+    .filter((r): r is { inning: number; position: DefensivePosition } => r.position !== 'BENCH');
+  const perRound = active.length ? Math.max(2, Math.min(4, Math.round(8 / active.length))) : 0;
+  const usedScenario = new Set<string>();
+  const usedAnswer = new Set<string>();
+
+  const rounds: PracticeRound[] = active.map(({ inning, position }) => {
+    const picked: Question[] = [];
+    // 1) It's hit to you.
+    for (const s of shuffle(SCENARIOS, rand)) {
+      if (picked.length >= Math.min(2, perRound - 1)) break;
+      if (usedScenario.has(s.id)) continue;
+      const q = prePitchQuestion(s);
+      if (!q || q.position !== position) continue;
+      const key = `${position}:${q.correctId}:${s.gameState.runners.join('')}`;
+      if (usedAnswer.has(key)) continue;
+      usedAnswer.add(key);
+      usedScenario.add(s.id);
+      picked.push(q);
+    }
+    // 2) It's hit somewhere else — where do you go?
+    for (const s of shuffle(SCENARIOS, rand)) {
+      if (picked.length >= perRound) break;
+      if (usedScenario.has(s.id) || !s.relevantPositions.includes(position)) continue;
+      const q = prePitchDestinationQuestion(s, position);
+      const key = `${position}:dest:${q.correctId}`;
+      if (usedAnswer.has(key)) continue;
+      usedAnswer.add(key);
+      usedScenario.add(s.id);
+      picked.push(q);
+    }
+    return { inning, position, questions: picked };
+  });
+
+  const total = rounds.reduce((n, r) => n + r.questions.length, 0);
   return { playerId, rounds: rounds.filter((r) => r.questions.length), total };
 }

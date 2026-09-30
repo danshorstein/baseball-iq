@@ -29,6 +29,8 @@ export interface DestinationQuestion {
   cheer: string;
   explanation: string;
   hint: string;
+  /** Asked before the pitch (field frozen at the start). */
+  beforePitch?: boolean;
 }
 
 export interface ChoiceQuestion {
@@ -43,8 +45,9 @@ export interface ChoiceQuestion {
   explanation: string;
   concept: Concept;
   /** Where in the play the question appears. */
-  pauseAt: 'HIT' | 'DECISION' | 'HIGHLIGHT';
+  pauseAt: 'HIT' | 'DECISION' | 'HIGHLIGHT' | 'START';
   hint: string;
+  beforePitch?: boolean;
 }
 
 export type Question = DestinationQuestion | ChoiceQuestion;
@@ -167,7 +170,7 @@ export function choiceQuestions(scenario: Scenario): ChoiceQuestion[] {
     explanation: c.explanation,
     concept: c.concept,
     pauseAt: 'HIT',
-    hint: 'Remember: the ball only needs one kid.',
+    hint: c.concept === 'CALL_IT' ? 'Who is closest to the ball?' : 'Remember: the ball only needs one kid.',
   }));
 }
 
@@ -192,3 +195,103 @@ export function lessonQuestions(scenario: Scenario): Question[] {
 }
 
 export const conceptLabel = (c: Concept) => CONCEPT_LABELS[c];
+
+// ─────────────────────────────────────────────────────────────
+// BEFORE THE PITCH
+// "If it's hit to YOU, what's the play?" — the answer comes from the
+// scenario script (who the fielder throws to) plus the rule engine
+// (what that receiver is doing: covering 1st, cutoff, …).
+// ─────────────────────────────────────────────────────────────
+
+const PLAY_LABELS: Record<string, string> = {
+  FIRST: 'THROW TO 1ST',
+  SECOND: 'THROW TO 2ND',
+  THIRD: 'THROW TO 3RD',
+  HOME: 'THROW HOME',
+  CUTOFF: 'THROW TO THE CUTOFF',
+  STEP: 'STEP ON 1ST',
+  HOLD: 'HOLD IT ✋',
+  CATCH: 'CALL IT & CATCH IT',
+  WAIT: 'WAIT FOR SOMEONE ELSE',
+};
+const PLAY_ORDER = ['CATCH', 'STEP', 'FIRST', 'SECOND', 'THIRD', 'HOME', 'CUTOFF', 'HOLD', 'WAIT'];
+
+const RECEIVER_PLAY: Partial<Record<string, string>> = {
+  COVER_FIRST: 'FIRST',
+  COVER_SECOND: 'SECOND',
+  COVER_THIRD: 'THIRD',
+  COVER_HOME: 'HOME',
+  CUTOFF: 'CUTOFF',
+  RELAY: 'CUTOFF',
+};
+
+const PLAY_WHY: Record<string, string> = {
+  FIRST: 'Get the sure out at first!',
+  SECOND: 'Short toss to second for the force!',
+  THIRD: 'Throw to third!',
+  HOME: 'Throw home!',
+  CUTOFF: 'Get it in — hit the cutoff!',
+  STEP: 'Close to the bag? Step on first yourself!',
+  HOLD: 'No good throw here. Hold the ball and keep the runner where he is!',
+  CATCH: 'You’re closest — yell "I GOT IT!" and catch it.',
+};
+
+/** What the fielder should do with the ball, read from the scenario script. */
+export function playForFielder(scenario: Scenario): string | null {
+  if (scenario.phases.some((p) => p.kind === 'BOBBLE')) return null; // mistakes aren't the plan
+  const resolved = resolveScenario({ event: scenario.event, ...scenario.gameState, overrides: scenario.overrides });
+  const fielder = resolved.primaryFielder;
+  if (!fielder) return null;
+  if (scenario.decision && scenario.decision.position === fielder) {
+    return scenario.decision.correctId === 'HOLD' ? 'HOLD' : null;
+  }
+  const hitIdx = scenario.phases.findIndex((p) => p.kind === 'HIT');
+  for (const p of scenario.phases.slice(hitIdx + 1)) {
+    if (p.kind === 'THROW' || p.kind === 'OVERTHROW') {
+      return RECEIVER_PLAY[resolved.assignments[p.to].action] ?? null;
+    }
+    if (p.kind === 'CARRY') return 'STEP';
+    if (p.kind === 'OUT' && scenario.event === 'POPUP_SS') return 'CATCH';
+    if (p.kind === 'DECISION') return null;
+  }
+  return null;
+}
+
+export function prePitchQuestion(scenario: Scenario): ChoiceQuestion | null {
+  const play = playForFielder(scenario);
+  if (!play) return null;
+  const resolved = resolveScenario({ event: scenario.event, ...scenario.gameState, overrides: scenario.overrides });
+  const fielder = resolved.primaryFielder!;
+  const outfield = ['LF', 'LCF', 'RCF', 'RF'].includes(fielder);
+  const pool =
+    play === 'CATCH'
+      ? ['CATCH', 'WAIT', 'FIRST']
+      : outfield
+        ? ['CUTOFF', 'HOME', 'THIRD', 'SECOND']
+        : scenario.gameState.runners.length
+          ? ['FIRST', 'SECOND', 'THIRD', 'HOME', 'HOLD']
+          : ['FIRST', 'SECOND', 'HOME', 'HOLD'];
+  const picks = [play, ...pool.filter((x) => x !== play)].slice(0, 3);
+  const choices = PLAY_ORDER.filter((x) => picks.includes(x)).map((id) => ({ id, label: PLAY_LABELS[id] }));
+  return {
+    kind: 'CHOICE',
+    id: `${scenario.id}:pre`,
+    scenarioId: scenario.id,
+    position: fielder,
+    prompt: "IT'S HIT TO YOU, {NAME}! WHAT'S THE PLAY?",
+    choices,
+    correctId: play,
+    correctTitle: `YES! ${PLAY_LABELS[play].replace(' ✋', '')}!`,
+    explanation: resolved.assignments[fielder].explanation || PLAY_WHY[play],
+    concept: play === 'HOLD' ? 'HOLD_THE_BALL' : play === 'CUTOFF' ? 'CUTOFF_AND_RELAY' : play === 'CATCH' ? 'CALL_IT' : 'FIELDING_YOUR_BALL',
+    pauseAt: 'START',
+    hint: 'Where is the easiest, safest out? Is there a runner?',
+    beforePitch: true,
+  };
+}
+
+/** "Before the pitch: if it's hit THERE, where do you go?" */
+export function prePitchDestinationQuestion(scenario: Scenario, pos: DefensivePosition): DestinationQuestion {
+  const q = destinationQuestion(scenario, pos);
+  return { ...q, id: `${q.id}:pre`, customPrompt: 'WHERE DOES {NAME} GO?', beforePitch: true };
+}

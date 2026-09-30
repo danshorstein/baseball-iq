@@ -7,6 +7,7 @@ export type Route =
   | { name: 'play'; id: string }
   | { name: 'plays' }
   | { name: 'practice' }
+  | { name: 'pitch' }
   | { name: 'coach' };
 
 export function parseHash(hash: string): Route {
@@ -20,6 +21,8 @@ export function parseHash(hash: string): Route {
       return { name: 'plays' };
     case 'practice':
       return { name: 'practice' };
+    case 'before-pitch':
+      return { name: 'pitch' };
     case 'coach':
       return { name: 'coach' };
     default:

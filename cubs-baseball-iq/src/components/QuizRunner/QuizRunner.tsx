@@ -28,6 +28,7 @@ export function QuestionView({ question: q, names, onAnswered, onNext, nextLabel
 
   // Where to freeze the play and ask.
   const stopAt = useMemo(() => {
+    if (q.beforePitch || (q.kind === 'CHOICE' && q.pauseAt === 'START')) return 0.01;
     if (q.kind === 'DESTINATION') {
       if (resolved.primaryFielder === q.position) return timeline.pitchEnd + 0.35;
       return Math.min(timeline.hitEnd, timeline.reactStart);
@@ -54,7 +55,7 @@ export function QuestionView({ question: q, names, onAnswered, onNext, nextLabel
   const asking = player.stopped && !done;
   const name = q.position ? names[q.position] : '';
   const NAME = name.toUpperCase();
-  const fill = (s: string) => s.replaceAll('{name}', name);
+  const fill = (s: string) => s.replaceAll('{name}', name).replaceAll('{NAME}', NAME);
 
   const finish = (firstTry: boolean) => {
     setDone(true);
@@ -103,6 +104,7 @@ export function QuestionView({ question: q, names, onAnswered, onNext, nextLabel
     <div className="quiz">
       <Situation lines={scenario.situation} />
       <div className="quiz-q">
+        {q.beforePitch && <div className="pre-tag">⏸ Before the pitch — think it through!</div>}
         <div className={`quiz-prompt ${prompt.length > 40 ? "quiz-prompt-long" : ""}`}>{prompt}</div>
         {q.position && (
           <div className="quiz-sub">

@@ -17,7 +17,9 @@ function Routes() {
     case 'plays':
       return <Plays />;
     case 'practice':
-      return <Practice />;
+      return <Practice key="practice" />;
+    case 'pitch':
+      return <Practice key="pitch" mode="pitch" />;
     case 'coach':
       return <Coach />;
     default:

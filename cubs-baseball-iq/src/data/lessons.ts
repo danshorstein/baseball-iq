@@ -20,7 +20,7 @@ export const LESSONS: Lesson[] = [
     emoji: '🧱',
     tagline: 'Ball to short — I cover second.',
     focus: ['SS & 2B share second', 'Covering first', 'Covering third', 'Protecting home'],
-    scenarioIds: ['gb-ss-r1', 'gb-2b-r1', 'gb-3b', 'gb-1b-off', 'no-chase-ss'],
+    scenarioIds: ['gb-ss-r1', 'gb-2b-r1', 'gb-3b-r2', 'gb-1b-off', 'no-chase-ss'],
   },
   {
     id: 'back-it-up',
@@ -38,7 +38,7 @@ export const LESSONS: Lesson[] = [
     emoji: '🎯',
     tagline: 'Ball is in left — get it to the cutoff.',
     focus: ['Outfield', 'Cutoff players', 'Relays', 'No huge throws'],
-    scenarioIds: ['single-rf-r1', 'single-lf-r2', 'no-chase-lf', 'bases-loaded-fly-lf', 'bases-loaded-fly-rf'],
+    scenarioIds: ['single-rf-r1', 'single-lf-r2', 'deep-lf', 'no-chase-lf', 'bases-loaded-fly-lf'],
   },
   {
     id: 'hold-the-ball',
@@ -57,6 +57,33 @@ export const LESSONS: Lesson[] = [
     tagline: 'Touch the base or tag the runner?',
     focus: ['Force plays', 'Tag plays'],
     scenarioIds: ['force-first', 'force-second', 'tag-third', 'force-third'],
+  },
+  {
+    id: 'call-it',
+    number: 6,
+    title: 'Call It!',
+    emoji: '📣',
+    tagline: '"I GOT IT!" — closest player takes it.',
+    focus: ['Closest player calls it', 'Back up the player who called it', 'Back away on pop-ups'],
+    scenarioIds: ['gap-left', 'gap-right', 'popup'],
+  },
+  {
+    id: 'runner-on-third',
+    number: 7,
+    title: 'Runner on Third',
+    emoji: '🏠',
+    tagline: 'Hold him — or take the out at first?',
+    focus: ['Ball on the 1B side: out at first', 'Ball on the 3B side: hold the runner'],
+    scenarioIds: ['r3-gb-3b', 'r3-gb-2b'],
+  },
+  {
+    id: 'hit-to-me',
+    number: 8,
+    title: "It's Hit to Me!",
+    emoji: '🧤',
+    tagline: 'Pitcher, catcher, corners — know your play.',
+    focus: ['Comebacker to the pitcher', 'Catcher on a slow roller', 'Grounders to 3B and 1B'],
+    scenarioIds: ['gb-p', 'gb-c', 'gb-3b', 'gb-1b-near'],
   },
 ];
 

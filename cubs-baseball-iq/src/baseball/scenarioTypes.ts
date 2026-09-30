@@ -110,7 +110,7 @@ export interface ChoiceQuestionDef {
   correctId: string;
   correctTitle: string;
   explanation: string;
-  concept: 'DONT_CHASE' | 'FORCE_VS_TAG' | 'HOLD_THE_BALL';
+  concept: 'DONT_CHASE' | 'FORCE_VS_TAG' | 'HOLD_THE_BALL' | 'CALL_IT';
 }
 
 export interface ForceTagDef {

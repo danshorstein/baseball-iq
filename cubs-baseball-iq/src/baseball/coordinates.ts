@@ -45,6 +45,8 @@ export type QuizTarget =
   | 'BEHIND_RF'
   | 'BEHIND_SS'
   | 'BEHIND_2B'
+  | 'BEHIND_3B'
+  | 'BEHIND_1B'
   | 'TOWARD_FIRST'
   | 'READY'
   | 'NONE';
@@ -79,14 +81,20 @@ export const LOCATIONS = {
   BACKUP_HOME: loc(42.5, 95, 'Behind home', 'BEHIND_HOME'),
   BACKUP_LEFT_SIDE: loc(36.5, 52, 'Behind SS', 'BEHIND_SS'),
   BACKUP_RIGHT_SIDE: loc(63.5, 52, 'Behind 2B', 'BEHIND_2B'),
+  BACKUP_3B_FIELDER: loc(31.5, 55, 'Behind 3B', 'BEHIND_3B'),
+  BACKUP_1B_FIELDER: loc(69.5, 59.5, 'Behind 1B', 'BEHIND_1B'),
   BACKUP_LF: loc(18.5, 31, 'Behind LF', 'BEHIND_LF'),
   BACKUP_RF: loc(81.5, 31, 'Behind RF', 'BEHIND_RF'),
+  BACKUP_GAP_LEFT: loc(28, 27.5, 'Behind him', 'BEHIND_LF'),
+  BACKUP_GAP_RIGHT: loc(70, 28.5, 'Behind him', 'BEHIND_RF'),
+  BACKUP_DEEP_LF: loc(26, 35, 'Near LF', 'BEHIND_LF'),
   // Pitcher breaks toward first on infield grounders (coach confirmed).
   P_TOWARD_FIRST: loc(57, 78.5, 'Toward 1st', 'TOWARD_FIRST'),
 
   // ── Cutoffs / relays ─────────────────────────────────────
   SS_CUTOFF_LEFT: loc(35, 50, 'Cutoff', 'CUTOFF_LEFT'),
   SECOND_BASE_CUTOFF_RIGHT: loc(65, 50, 'Cutoff', 'CUTOFF_RIGHT'),
+  SS_RELAY_DEEP: loc(29, 43.5, 'Relay', 'CUTOFF_LEFT'),
 
   // ── "Come in and be ready" spots for far-side outfielders ──
   LF_READY: loc(25, 47, 'Be ready', 'READY'),
@@ -105,6 +113,12 @@ export const LOCATIONS = {
   RIGHT_FIELD_BALL: loc(75, 44, 'The ball', 'BALL'),
   FLY_LF: loc(22.5, 38.5, 'The ball', 'BALL'),
   FLY_RF: loc(77.5, 38.5, 'The ball', 'BALL'),
+  GROUNDER_P: loc(51.5, 76.5, 'The ball', 'BALL'),
+  DRIBBLER_C: loc(54.5, 82.5, 'The ball', 'BALL'),
+  GAP_LEFT_BALL: loc(31, 35, 'The ball', 'BALL'),
+  GAP_RIGHT_BALL: loc(67, 36, 'The ball', 'BALL'),
+  POPUP_SS_SPOT: loc(41, 64, 'The ball', 'BALL'),
+  OVER_LF: loc(18, 30, 'The ball', 'BALL'),
 
   // ── Where a ball ends up when NOBODY backs up ────────────
   LOOSE_PAST_FIRST: loc(83, 84, 'Loose ball', 'NONE'),
