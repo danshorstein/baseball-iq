@@ -1,12 +1,12 @@
+import { batterAdvice } from '../../baseball/settings';
 import { useMemo, useState } from 'react';
 import { buildScenario, sampleTimeline, type DemoVariant } from '../../animation/animationEngine';
 import { useTimelinePlayer } from '../../animation/useTimelinePlayer';
 import type { Scenario } from '../../baseball/scenarioTypes';
-import { DEFENSIVE_POSITIONS, type Coordinate, type DefensivePosition } from '../../baseball/types';
+import { type Coordinate, type DefensivePosition } from '../../baseball/types';
 import { useApp } from '../../state/AppContext';
 import { BaseballField } from '../BaseballField/BaseballField';
 import { DebugPanel } from '../DebugPanel/DebugPanel';
-import { InningSelector } from '../InningSelector/InningSelector';
 import { Situation } from '../Layout/TopBar';
 import { QuizOverlay } from '../QuizOverlay/QuizOverlay';
 import { ScenarioControls } from '../ScenarioControls/ScenarioControls';
@@ -21,8 +21,7 @@ type DecisionState = 'none' | 'correct' | 'correctPlaying' | 'wrongDemo';
 
 /** LEARN MODE: watch the play, tap players to see their job. */
 export function ScenarioLearn({ scenario, footer }: Props) {
-  const { speed, setSpeed, inning, setInning, namesFor, debug } = useApp();
-  const names = namesFor(inning);
+  const { speed, setSpeed, names, debug, settings } = useApp();
   const [variant, setVariant] = useState<DemoVariant>('main');
   const [startAt, setStartAt] = useState(0);
   const [autoPlay, setAutoPlay] = useState(false);
@@ -40,7 +39,7 @@ export function ScenarioLearn({ scenario, footer }: Props) {
   });
   const frame = sampleTimeline(timeline, player.t);
   const pause = player.activePause;
-  const bad = DEFENSIVE_POSITIONS.filter((p) => resolved.assignments[p].action === 'CHASE_BALL');
+  const bad = resolved.positions.filter((p) => resolved.assignments[p].action === 'CHASE_BALL');
 
   const switchTo = (v: DemoVariant, at = 0, auto = true, d: DecisionState = 'none') => {
     setVariant(v);
@@ -155,7 +154,7 @@ export function ScenarioLearn({ scenario, footer }: Props) {
         speed={speed}
         onSpeed={setSpeed}
       />
-      <InningSelector inning={inning} onChange={setInning} />
+      <p className="setup-note">{batterAdvice(settings)}</p>
       {player.done && variant === 'main' && scenario.alternate && (
         <button className="btn btn-outline btn-wide" onClick={() => switchTo('alternate')}>
           🤔 {scenario.alternate.label}

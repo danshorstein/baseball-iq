@@ -1,6 +1,7 @@
 import { ASSIGNMENTS, type Concept } from './assignments';
 import { START_POSITIONS, coord, distance, type LocationKey } from './coordinates';
 import { DEFENSIVE_RULES, HOLD_BALL_RULE, type RuleAssignment } from './defensiveRules';
+import { activePositions, ageDefaults, startingPositions, type TrainingSettings } from './settings';
 import {
   DEFENSIVE_POSITIONS,
   type AssignmentAction,
@@ -19,6 +20,7 @@ import {
  */
 
 export interface ResolveInput extends Partial<GameState> {
+  configuration?: TrainingSettings;
   event: BallEvent;
   /** Scenario-specific tweaks (e.g. "what if RF doesn't back up?" demos). */
   overrides?: Partial<Record<DefensivePosition, RuleAssignment>>;
@@ -39,6 +41,9 @@ export interface ResolvedAssignment {
 }
 
 export interface ResolvedPlay {
+  configuration: TrainingSettings;
+  positions: DefensivePosition[];
+  startPositions: typeof START_POSITIONS;
   event: BallEvent;
   description: string;
   gameState: GameState;
@@ -52,6 +57,11 @@ export interface ResolvedPlay {
 
 export function resolveScenario(input: ResolveInput): ResolvedPlay {
   const rule = DEFENSIVE_RULES[input.event];
+  const configuration = input.configuration ?? ageDefaults('8U');
+  const positions = activePositions(configuration);
+  const startPositions = startingPositions(configuration);
+  const mapPosition = (pos: DefensivePosition): DefensivePosition =>
+    configuration.fielders === 9 && (pos === 'LCF' || pos === 'RCF') ? 'CF' : pos;
   const gameState: GameState = {
     runners: input.runners ?? [],
     outs: input.outs ?? 0,
@@ -59,7 +69,11 @@ export function resolveScenario(input: ResolveInput): ResolvedPlay {
   };
 
   // 1. Base assignments, 2. variants that match the runners, 3. scenario overrides.
-  const merged: Record<DefensivePosition, RuleAssignment> = { ...rule.assignments };
+  const merged: Record<DefensivePosition, RuleAssignment> = {
+    ...rule.assignments,
+    CF: rule.assignments.CF ?? (input.event.includes('LF') || input.event === 'GAP_LEFT'
+      ? rule.assignments.LCF : rule.assignments.RCF),
+  };
   const notes: string[] = [];
   for (const v of rule.variants ?? []) {
     if (v.whenRunnersOn.every((b) => gameState.runners.includes(b))) {
@@ -69,11 +83,11 @@ export function resolveScenario(input: ResolveInput): ResolvedPlay {
   }
 
   // Closest player calls it — and it's his ball.
-  let primaryFielder = rule.primaryFielder;
+  let primaryFielder = rule.primaryFielder ? mapPosition(rule.primaryFielder) : null;
   if (rule.closestOf && rule.ballLocation) {
     const ball = coord(rule.ballLocation);
-    primaryFielder = [...rule.closestOf].sort(
-      (p, q) => distance(START_POSITIONS[p], ball) - distance(START_POSITIONS[q], ball),
+    primaryFielder = [...new Set(rule.closestOf.map(mapPosition))].sort(
+      (p, q) => distance(startPositions[p], ball) - distance(startPositions[q], ball),
     )[0];
     merged[primaryFielder] = {
       action: 'FIELD_BALL',
@@ -81,7 +95,7 @@ export function resolveScenario(input: ResolveInput): ResolvedPlay {
     };
   }
 
-  const ballHolder = gameState.ballHolder ?? primaryFielder;
+  const ballHolder = gameState.ballHolder ? mapPosition(gameState.ballHolder) : primaryFielder;
   if (input.event === 'NO_PLAY_RUNNERS_STOPPED' && ballHolder) {
     merged[ballHolder] = HOLD_BALL_RULE;
   }
@@ -97,7 +111,7 @@ export function resolveScenario(input: ResolveInput): ResolvedPlay {
       destination: r.destination !== undefined ? r.destination : d.destination,
       label: d.label,
       cheer: d.cheer,
-      explanation: r.explanation || d.explanation,
+      explanation: (r.explanation || d.explanation).replace(configuration.fielders === 9 ? /\b(?:left center|right center|LCF|RCF)\b/gi : /$^/, 'center field'),
       hint: d.hint,
       concept: d.concept,
       reactionDelay: d.reactionDelay,
@@ -106,6 +120,9 @@ export function resolveScenario(input: ResolveInput): ResolvedPlay {
   }
 
   return {
+    configuration,
+    positions,
+    startPositions,
     event: input.event,
     description: rule.description,
     gameState,

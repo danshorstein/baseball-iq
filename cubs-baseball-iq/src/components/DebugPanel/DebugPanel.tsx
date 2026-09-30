@@ -1,8 +1,7 @@
 import type { Frame, Timeline } from '../../animation/animationTypes';
 import { destinationFor } from '../../animation/animationEngine';
-import { START_POSITIONS } from '../../baseball/coordinates';
 import type { ResolvedPlay } from '../../baseball/scenarioResolver';
-import { DEFENSIVE_POSITIONS, type Coordinate, type DefensivePosition } from '../../baseball/types';
+import { type Coordinate, type DefensivePosition } from '../../baseball/types';
 
 interface Props {
   resolved: ResolvedPlay;
@@ -40,7 +39,7 @@ export function DebugPanel({ resolved, timeline, frame, names, clicked, selected
       {sel && selected && (
         <pre className="debug-sel">
           {`${selected} (${names[selected]})
-START:       ${f(START_POSITIONS[selected])}
+START:       ${f(resolved.startPositions[selected])}
 DESTINATION: ${f(destinationFor(resolved, selected))}  [${sel.destination ?? 'stay'}]
 ACTION:      ${sel.action}
 ARRIVES:     t=${timeline.arrivals[selected].toFixed(2)}${sel.todo ? `\nTODO:        ${sel.todo}` : ''}`}
@@ -58,7 +57,7 @@ ARRIVES:     t=${timeline.arrivals[selected].toFixed(2)}${sel.todo ? `\nTODO:   
           </tr>
         </thead>
         <tbody>
-          {DEFENSIVE_POSITIONS.map((p) => {
+          {resolved.positions.map((p) => {
             const a = resolved.assignments[p];
             const d = destinationFor(resolved, p);
             return (

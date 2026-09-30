@@ -8,7 +8,8 @@ export type Route =
   | { name: 'plays' }
   | { name: 'practice' }
   | { name: 'pitch' }
-  | { name: 'coach' };
+  | { name: 'coach' }
+  | { name: 'rules' };
 
 export function parseHash(hash: string): Route {
   const parts = hash.replace(/^#\/?/, '').split('/').filter(Boolean);
@@ -23,6 +24,8 @@ export function parseHash(hash: string): Route {
       return { name: 'practice' };
     case 'before-pitch':
       return { name: 'pitch' };
+    case 'rules':
+      return { name: 'rules' };
     case 'coach':
       return { name: 'coach' };
     default:

@@ -3,7 +3,6 @@ import {
   LOCATIONS,
   PITCH_RELEASE,
   RUNNER_BASE_SPOTS,
-  START_POSITIONS,
   coord,
   distance,
 } from '../baseball/coordinates';
@@ -135,6 +134,7 @@ export function buildScenario(scenario: Scenario, variant: DemoVariant = 'main')
     event: scenario.event,
     ...scenario.gameState,
     overrides,
+    configuration: scenario.configuration,
   });
   return { resolved, timeline: buildTimeline(resolved, phases), variant };
 }
@@ -146,9 +146,9 @@ export function destinationFor(
   chaseIndex = 0,
 ): Coordinate {
   const a = resolved.assignments[pos];
-  if (a.destination === null) return START_POSITIONS[pos];
+  if (a.destination === null) return resolved.startPositions[pos];
   if (a.destination === 'BALL') {
-    const ball = resolved.ballLocation ? coord(resolved.ballLocation) : START_POSITIONS[pos];
+    const ball = resolved.ballLocation ? coord(resolved.ballLocation) : resolved.startPositions[pos];
     if (a.action === 'CHASE_BALL') {
       const o = CHASE_OFFSETS[chaseIndex % CHASE_OFFSETS.length];
       return { x: ball.x + o.x, y: ball.y + o.y };
@@ -162,7 +162,7 @@ export function buildTimeline(resolved: ResolvedPlay, phases: ScenarioPhase[]): 
   const players = {} as Record<DefensivePosition, Track>;
   const arrivals = {} as Record<DefensivePosition, number>;
   for (const pos of DEFENSIVE_POSITIONS) {
-    players[pos] = { keys: [{ t: 0, ...START_POSITIONS[pos] }] };
+    players[pos] = { keys: [{ t: 0, ...resolved.startPositions[pos] }] };
     arrivals[pos] = 0;
   }
 
@@ -179,7 +179,7 @@ export function buildTimeline(resolved: ResolvedPlay, phases: ScenarioPhase[]): 
 
   let holder: DefensivePosition | null = resolved.gameState.ballHolder ?? null;
   const ball: Track = {
-    keys: [{ t: 0, ...(holder ? START_POSITIONS[holder] : PITCH_RELEASE) }],
+    keys: [{ t: 0, ...(holder ? resolved.startPositions[holder] : resolved.configuration.pitching === 'player' ? resolved.startPositions.P : PITCH_RELEASE) }],
   };
 
   const pauses: Pause[] = [];
@@ -216,7 +216,7 @@ export function buildTimeline(resolved: ResolvedPlay, phases: ScenarioPhase[]): 
     if (!tr || runnerOuts[id] !== undefined) return;
     // FORCE: out the moment the ball beats him to the base — he stops there.
     // TAG: he is tagged just as he reaches the base.
-    const forced = isForced(id, resolved.gameState.runners);
+    const forced = isForced(id, resolved.gameState.runners, Object.keys(runnerOuts) as RunnerId[]);
     const outT = forced ? t : Math.max(t, trackEnd(tr) - 0.35);
     const at = sampleTrack(tr, outT);
     tr.keys = tr.keys.filter((k) => k.t < outT);
@@ -315,7 +315,7 @@ export function buildTimeline(resolved: ResolvedPlay, phases: ScenarioPhase[]): 
       case 'REACT': {
         if (reactStart < 0) reactStart = t0;
         let chaseIndex = 0;
-        for (const pos of DEFENSIVE_POSITIONS) {
+        for (const pos of resolved.positions) {
           if (moved.has(pos)) continue;
           const a = resolved.assignments[pos];
           const dest = destinationFor(resolved, pos, a.action === 'CHASE_BALL' ? chaseIndex++ : 0);
@@ -484,6 +484,7 @@ export function buildTimeline(resolved: ResolvedPlay, phases: ScenarioPhase[]): 
   duration = Math.max(duration, lastKey(ball).t) + 0.4;
 
   return {
+    positions: resolved.positions,
     duration,
     players,
     ball,
@@ -523,6 +524,7 @@ export function sampleTimeline(tl: Timeline, t: number): Frame {
   if (t >= tl.duration - 0.01) phase = 'DONE';
   const cap = tl.captions.find((c) => t >= c.t && t < c.until);
   return {
+    positions: tl.positions,
     t,
     players,
     ball,

@@ -31,7 +31,7 @@ export interface RuleAssignment {
   todo?: string;
 }
 
-export type PositionRules = Record<DefensivePosition, RuleAssignment>;
+export type PositionRules = Record<Exclude<DefensivePosition, 'CF'>, RuleAssignment> & { CF?: RuleAssignment };
 
 export interface RuleVariant {
   /** Applies when ALL of these bases have a runner. */
@@ -172,11 +172,12 @@ const GROUND_BALL_3B: DefensiveRule = {
       },
     },
     {
-      // Coach: ball on the 3B side with a runner on third — hold him there, don't make the long throw.
+      // The fielder reads the runner and time available. A runner on third
+      // alone is not a reason to give up an achievable out at first.
       whenRunnersOn: ['THIRD'],
-      note: 'Runner on third: 3B holds the ball and looks the runner back. SS covers third.',
+      note: 'Runner on third: SS covers the bag while 3B reads the play.',
       assignments: {
-        '3B': a('FIELD_BALL', 'Field it, then LOOK the runner back to third. Hold him there!'),
+        '3B': a('FIELD_BALL', 'Field it, check the runner at third, and take a realistic out. Hold it if there is no play.'),
         SS: a('COVER_THIRD', 'Third baseman left the bag. You cover third so the runner stays put!'),
       },
     },

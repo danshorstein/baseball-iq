@@ -1,5 +1,5 @@
 import { CONCEPT_LABELS, type Concept } from './assignments';
-import { LOCATIONS, START_POSITIONS, coord, distance, type QuizTarget } from './coordinates';
+import { LOCATIONS, coord, distance, type QuizTarget } from './coordinates';
 import { resolveScenario, type ResolvedPlay } from './scenarioResolver';
 import type { ChoiceOption, Scenario } from './scenarioTypes';
 import { PLAY_TYPE_TEXT, playTypeFor } from './teachingRules';
@@ -34,6 +34,7 @@ export interface DestinationQuestion {
 }
 
 export interface ChoiceQuestion {
+  situation?: [string, string];
   kind: 'CHOICE';
   id: string;
   scenarioId: string;
@@ -67,7 +68,7 @@ const EXTRA_PINS: TargetPin[] = [
 
 function pinFor(resolved: ResolvedPlay, pos: DefensivePosition): TargetPin {
   const a = resolved.assignments[pos];
-  if (a.destination === null) return { id: 'STAY', label: 'Stay here', ...START_POSITIONS[pos] };
+  if (a.destination === null) return { id: 'STAY', label: 'Stay here', ...resolved.startPositions[pos] };
   if (a.destination === 'BALL') {
     return { id: 'BALL', label: 'The ball', ...coord(resolved.ballLocation ?? 'MOUND') };
   }
@@ -83,7 +84,7 @@ export function buildTargets(resolved: ResolvedPlay, pos: DefensivePosition): Ta
   if (resolved.ballLocation && correct.id !== 'BALL') {
     pool.push({ id: 'BALL', label: 'The ball', ...coord(resolved.ballLocation) });
   }
-  const start = START_POSITIONS[pos];
+  const start = resolved.startPositions[pos];
   const rest = [...BASE_PINS, ...EXTRA_PINS].sort((a, b) => distance(a, start) - distance(b, start));
   pool.push(...rest);
   for (const p of pool) {
@@ -96,7 +97,7 @@ export function buildTargets(resolved: ResolvedPlay, pos: DefensivePosition): Ta
 }
 
 export function destinationQuestion(scenario: Scenario, pos: DefensivePosition): DestinationQuestion {
-  const resolved = resolveScenario({ event: scenario.event, ...scenario.gameState, overrides: scenario.overrides });
+  const resolved = resolveScenario({ event: scenario.event, ...scenario.gameState, overrides: scenario.overrides, configuration: scenario.configuration });
   const a = resolved.assignments[pos];
   const targets = buildTargets(resolved, pos);
   return {
@@ -239,7 +240,7 @@ const PLAY_WHY: Record<string, string> = {
 /** What the fielder should do with the ball, read from the scenario script. */
 export function playForFielder(scenario: Scenario): string | null {
   if (scenario.phases.some((p) => p.kind === 'BOBBLE')) return null; // mistakes aren't the plan
-  const resolved = resolveScenario({ event: scenario.event, ...scenario.gameState, overrides: scenario.overrides });
+  const resolved = resolveScenario({ event: scenario.event, ...scenario.gameState, overrides: scenario.overrides, configuration: scenario.configuration });
   const fielder = resolved.primaryFielder;
   if (!fielder) return null;
   if (scenario.decision && scenario.decision.position === fielder) {
@@ -260,7 +261,7 @@ export function playForFielder(scenario: Scenario): string | null {
 export function prePitchQuestion(scenario: Scenario): ChoiceQuestion | null {
   const play = playForFielder(scenario);
   if (!play) return null;
-  const resolved = resolveScenario({ event: scenario.event, ...scenario.gameState, overrides: scenario.overrides });
+  const resolved = resolveScenario({ event: scenario.event, ...scenario.gameState, overrides: scenario.overrides, configuration: scenario.configuration });
   const fielder = resolved.primaryFielder!;
   const outfield = ['LF', 'LCF', 'RCF', 'RF'].includes(fielder);
   const pool =
@@ -282,7 +283,7 @@ export function prePitchQuestion(scenario: Scenario): ChoiceQuestion | null {
     choices,
     correctId: play,
     correctTitle: `YES! ${PLAY_LABELS[play].replace(' ✋', '')}!`,
-    explanation: resolved.assignments[fielder].explanation || PLAY_WHY[play],
+    explanation: PLAY_WHY[play] + ' ' + resolved.assignments[fielder].explanation,
     concept: play === 'HOLD' ? 'HOLD_THE_BALL' : play === 'CUTOFF' ? 'CUTOFF_AND_RELAY' : play === 'CATCH' ? 'CALL_IT' : 'FIELDING_YOUR_BALL',
     pauseAt: 'START',
     hint: 'Where is the easiest, safest out? Is there a runner?',

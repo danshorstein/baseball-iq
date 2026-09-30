@@ -19,6 +19,10 @@ export function PlayerMarker({ position, name, x, y, selected, dimmed, bad, onTa
     <g
       className={`pm ${selected ? 'pm-selected' : ''} ${dimmed ? 'pm-dim' : ''} ${bad ? 'pm-bad' : ''}`}
       transform={`translate(${x} ${y})`}
+      role={onTap ? 'button' : undefined}
+      tabIndex={onTap ? 0 : undefined}
+      aria-label={onTap ? `${name} (${position}): show job` : undefined}
+      onKeyDown={onTap ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onTap(position); } } : undefined}
       onClick={onTap ? (e) => { e.stopPropagation(); onTap(position); } : undefined}
       style={{ cursor: onTap ? 'pointer' : undefined }}
     >

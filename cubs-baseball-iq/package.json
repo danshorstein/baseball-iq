@@ -1,5 +1,5 @@
 {
-  "name": "cubs-baseball-iq",
+  "name": "baseball-iq",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -8,20 +8,29 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "build:single": "tsc -b && vite build --mode single"
+    "build:single": "tsc -b && vite build --mode single",
+    "test": "node --import tsx --test --test-isolation=none tests/*.test.ts",
+    "test:e2e": "npm run build:pages && playwright test",
+    "build:pages": "npm run build:single && node scripts/build-pages.mjs",
+    "video:briefs": "node --import tsx scripts/write-video-briefs.ts"
   },
   "dependencies": {
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",
     "@vitejs/plugin-react": "^6.1.1",
     "oxlint": "^1.81.0",
+    "tsx": "^4.23.15",
     "typescript": "~6.0.2",
     "vite": "^8.3.0",
     "vite-plugin-singlefile": "^2.3.3"
+  },
+  "engines": {
+    "node": ">=24"
   }
 }

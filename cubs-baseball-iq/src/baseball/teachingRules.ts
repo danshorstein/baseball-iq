@@ -37,7 +37,8 @@ export const BALL_BASE_BACKUP = [
  * `runner` is the runner we're asking about. `occupied` are the bases
  * that had runners when the ball was hit.
  */
-export function isForced(runner: RunnerId, occupied: RunnerBase[]): boolean {
+export function isForced(runner: RunnerId, occupied: RunnerBase[], retired: RunnerId[] = []): boolean {
+  if (retired.includes('BATTER') || retired.includes(runner)) return false;
   const start = RUNNER_START_BASE[runner];
   if (start === 'HOME') return true; // batter must run to first
   const chain: BaseName[] = ['FIRST', 'SECOND', 'THIRD'];
@@ -45,14 +46,15 @@ export function isForced(runner: RunnerId, occupied: RunnerBase[]): boolean {
   // All bases behind this runner must be occupied.
   for (let i = 0; i < idx; i++) {
     if (!occupied.includes(chain[i] as RunnerBase)) return false;
+    if (retired.includes(i === 0 ? 'R1' : 'R2')) return false;
   }
   return true;
 }
 
 export type PlayType = 'FORCE' | 'TAG';
 
-export const playTypeFor = (runner: RunnerId, occupied: RunnerBase[]): PlayType =>
-  isForced(runner, occupied) ? 'FORCE' : 'TAG';
+export const playTypeFor = (runner: RunnerId, occupied: RunnerBase[], retired: RunnerId[] = []): PlayType =>
+  isForced(runner, occupied, retired) ? 'FORCE' : 'TAG';
 
 export const PLAY_TYPE_TEXT: Record<PlayType, { title: string; text: string }> = {
   FORCE: {

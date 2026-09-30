@@ -140,6 +140,7 @@ export const START_POSITIONS: Record<DefensivePosition, Coordinate> = {
   SS: { x: 40.5, y: 58.5 },
   '3B': { x: 31, y: 67 },
   LF: { x: 22, y: 42 },
+  CF: { x: 50, y: 31 },
   LCF: { x: 40, y: 31 },
   RCF: { x: 60, y: 31 },
   RF: { x: 78, y: 42 },

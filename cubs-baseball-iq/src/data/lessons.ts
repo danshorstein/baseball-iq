@@ -72,8 +72,8 @@ export const LESSONS: Lesson[] = [
     number: 7,
     title: 'Runner on Third',
     emoji: '🏠',
-    tagline: 'Hold him — or take the out at first?',
-    focus: ['Ball on the 1B side: out at first', 'Ball on the 3B side: hold the runner'],
+    tagline: 'Read the runner and the time you have.',
+    focus: ['Take a realistic out', 'Avoid a late throw with no chance of an out'],
     scenarioIds: ['r3-gb-3b', 'r3-gb-2b'],
   },
   {

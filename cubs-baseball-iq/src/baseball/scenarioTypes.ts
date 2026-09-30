@@ -1,5 +1,6 @@
 import type { LocationKey } from './coordinates';
 import type { RuleAssignment } from './defensiveRules';
+import type { TrainingSettings } from './settings';
 import type {
   BallEvent,
   BaseName,
@@ -126,6 +127,7 @@ export interface AlternateDemo {
 }
 
 export interface Scenario {
+  configuration?: TrainingSettings;
   id: string;
   title: string;
   /** Two short banner lines, e.g. ["RUNNER ON FIRST", "GROUND BALL TO SHORTSTOP"] */
