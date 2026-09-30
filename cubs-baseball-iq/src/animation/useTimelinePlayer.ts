@@ -43,6 +43,9 @@ export function useTimelinePlayer(timeline: Timeline, opts: PlayerOptions): Time
     tRef.current = startAt;
     consumed.current = new Set();
     stopConsumed.current = false;
+    // Playback is an external animation system. Reset its displayed state
+    // when a new timeline or playback mode is selected.
+    // oxlint-disable-next-line react/set-state-in-effect
     setT(startAt);
     setActivePause(null);
     setStopped(false);

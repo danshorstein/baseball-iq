@@ -15,12 +15,12 @@ export function TopBar({ back, title }: Props) {
           </button>
         ) : null}
         <button className="brand" onClick={() => go('/')}>
-          <span className="brand-cubs">CUBS</span>
+          <span className="brand-cubs">⚾</span>
           <span className="brand-iq">Baseball IQ</span>
         </button>
       </div>
       {title && <div className="topbar-title">{title}</div>}
-      <button className="icon-btn gear" onClick={() => go('/coach')} aria-label="Coach mode">
+      <button className="icon-btn gear" onClick={() => go('/coach')} aria-label="Setup and rules">
         ⚙
       </button>
     </header>

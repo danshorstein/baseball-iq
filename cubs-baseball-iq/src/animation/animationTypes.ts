@@ -55,6 +55,7 @@ export interface PhaseMarker {
 }
 
 export interface Timeline {
+  positions: DefensivePosition[];
   duration: number;
   players: Record<DefensivePosition, Track>;
   ball: Track;
@@ -81,6 +82,7 @@ export interface RunnerFrame extends Coordinate {
 }
 
 export interface Frame {
+  positions: DefensivePosition[];
   t: number;
   players: Record<DefensivePosition, Coordinate>;
   ball: Coordinate & { h: number };

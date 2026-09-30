@@ -5,7 +5,7 @@
  * deterministic baseball logic that can be unit tested and audited.
  */
 
-/** The 10 defensive positions this team uses (4 outfielders). */
+/** Position catalog; a setup activates either nine or ten fielders. */
 export const DEFENSIVE_POSITIONS = [
   'C',
   'P',
@@ -14,6 +14,7 @@ export const DEFENSIVE_POSITIONS = [
   'SS',
   '3B',
   'LF',
+  'CF',
   'LCF',
   'RCF',
   'RF',
@@ -29,6 +30,7 @@ export const POSITION_NAMES: Record<DefensivePosition, string> = {
   SS: 'Shortstop',
   '3B': 'Third Base',
   LF: 'Left Field',
+  CF: 'Center Field',
   LCF: 'Left Center',
   RCF: 'Right Center',
   RF: 'Right Field',

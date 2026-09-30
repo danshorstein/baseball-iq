@@ -2,7 +2,7 @@ import { useRef, type MouseEvent } from 'react';
 import type { Frame } from '../../animation/animationTypes';
 import { LOCATIONS } from '../../baseball/coordinates';
 import type { TargetPin } from '../../baseball/questions';
-import { DEFENSIVE_POSITIONS, type Coordinate, type DefensivePosition } from '../../baseball/types';
+import { type Coordinate, type DefensivePosition } from '../../baseball/types';
 import { Baseball } from '../Baseball/Baseball';
 import { PlayerMarker } from '../PlayerMarker/PlayerMarker';
 import { RunnerMarker } from '../RunnerMarker/RunnerMarker';
@@ -60,14 +60,14 @@ export function BaseballField({
   };
 
   // Draw the selected player last so they sit on top.
-  const order = [...DEFENSIVE_POSITIONS].sort((a, b) => (a === selected ? 1 : b === selected ? -1 : 0));
+  const order = [...frame.positions].sort((a, b) => (a === selected ? 1 : b === selected ? -1 : 0));
 
   return (
     <svg
       ref={svgRef}
       className="field-svg"
       viewBox="0 14 100 88"
-      role="img"
+      role="group"
       aria-label="Baseball field"
       onClick={handleClick}
     >
@@ -131,6 +131,13 @@ export function BaseballField({
             key={p.id}
             className={`pin pin-${st}`}
             transform={`translate(${p.x} ${p.y})`}
+            role="button"
+            tabIndex={st === 'idle' ? 0 : -1}
+            aria-label={p.label}
+            aria-disabled={st !== 'idle'}
+            onKeyDown={(e) => {
+              if (st === 'idle' && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); onTarget?.(p.id); }
+            }}
             onClick={(e) => {
               e.stopPropagation();
               if (st === 'idle') onTarget?.(p.id);

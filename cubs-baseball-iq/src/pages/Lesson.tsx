@@ -3,24 +3,25 @@ import { TopBar } from '../components/Layout/TopBar';
 import { QuizRunner } from '../components/QuizRunner/QuizRunner';
 import { ScenarioLearn } from '../components/ScenarioLearn/ScenarioLearn';
 import { ScorePanel, type QuestionResult } from '../components/ScorePanel/ScorePanel';
+import { LessonIntro } from '../components/LessonIntro/LessonIntro';
 import { lessonQuestions } from '../baseball/questions';
 import { lessonById } from '../data/lessons';
-import { scenarioById } from '../data/scenarios';
 import { go } from '../router';
 import { useApp } from '../state/AppContext';
 
 /** A lesson = for each play: watch it (Learn), then answer 1–3 questions (Quiz). */
 export function Lesson({ id }: { id: string }) {
   const lesson = lessonById(id);
-  const { namesFor, inning } = useApp();
+  const { scenarios, names } = useApp();
+  const scenarioById = (sid: string) => scenarios.find((s) => s.id === sid)!;
   const [step, setStep] = useState(0);
+  const [introSeen, setIntroSeen] = useState(false);
   const [results, setResults] = useState<QuestionResult[]>([]);
   const steps = useMemo(
     () => (lesson ? lesson.scenarioIds.flatMap((sid) => [{ sid, kind: 'learn' as const }, { sid, kind: 'quiz' as const }]) : []),
     [lesson],
   );
   if (!lesson) return <div className="page"><TopBar back="/" /><p>Lesson not found.</p></div>;
-  const names = namesFor(inning);
   const cur = steps[step];
   const playNum = Math.floor(step / 2) + 1;
 
@@ -31,7 +32,7 @@ export function Lesson({ id }: { id: string }) {
         <div className="lesson-head-title">
           {lesson.emoji} {lesson.title}
         </div>
-        {cur && (
+        {introSeen && cur && (
           <div className="dots">
             {lesson.scenarioIds.map((sid, i) => (
               <span key={sid} className={`dot ${i + 1 < playNum ? 'dot-done' : i + 1 === playNum ? 'dot-on' : ''}`} />
@@ -42,18 +43,19 @@ export function Lesson({ id }: { id: string }) {
           </div>
         )}
       </div>
-      {cur?.kind === 'learn' && (
+      {!introSeen && <LessonIntro id={id} onStart={() => setIntroSeen(true)} />}
+      {introSeen && cur?.kind === 'learn' && (
         <ScenarioLearn
           key={cur.sid}
           scenario={scenarioById(cur.sid)}
           footer={
-            <button className="btn btn-red btn-big btn-wide sticky-cta" onClick={() => setStep(step + 1)}>
+            <button className="btn btn-accent btn-big btn-wide sticky-cta" onClick={() => setStep(step + 1)}>
               Quiz me! →
             </button>
           }
         />
       )}
-      {cur?.kind === 'quiz' && (
+      {introSeen && cur?.kind === 'quiz' && (
         <QuizRunner
           key={cur.sid}
           items={lessonQuestions(scenarioById(cur.sid)).map((q) => ({ question: q, names }))}
@@ -66,7 +68,7 @@ export function Lesson({ id }: { id: string }) {
       )}
       {!cur && (
         <ScorePanel results={results} title={`${lesson.title.toUpperCase()} — DONE! ⚾`}>
-          <button className="btn btn-primary" onClick={() => { setResults([]); setStep(0); }}>
+          <button className="btn btn-primary" onClick={() => { setResults([]); setStep(0); setIntroSeen(false); }}>
             Do it again
           </button>
           <button className="btn btn-ghost" onClick={() => go('/')}>Home</button>

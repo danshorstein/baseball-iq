@@ -4,18 +4,16 @@ import { QuizRunner } from '../components/QuizRunner/QuizRunner';
 import { ScenarioLearn } from '../components/ScenarioLearn/ScenarioLearn';
 import { ScorePanel, type QuestionResult } from '../components/ScorePanel/ScorePanel';
 import { lessonQuestions } from '../baseball/questions';
-import { SCENARIOS } from '../data/scenarios';
 import { useApp } from '../state/AppContext';
 import { go } from '../router';
 
 /** One scenario from the library: Learn, then an optional quiz. */
 export function Play({ id }: { id: string }) {
-  const scenario = SCENARIOS.find((s) => s.id === id);
-  const { namesFor, inning } = useApp();
+  const { scenarios, names } = useApp();
+  const scenario = scenarios.find((s) => s.id === id);
   const [mode, setMode] = useState<'learn' | 'quiz' | 'done'>('learn');
   const [results, setResults] = useState<QuestionResult[]>([]);
   if (!scenario) return <div className="page"><TopBar back="/plays" /><p>Play not found.</p></div>;
-  const names = namesFor(inning);
 
   return (
     <div className="page">
@@ -25,7 +23,7 @@ export function Play({ id }: { id: string }) {
           key={scenario.id}
           scenario={scenario}
           footer={
-            <button className="btn btn-red btn-big btn-wide sticky-cta" onClick={() => setMode('quiz')}>
+            <button className="btn btn-accent btn-big btn-wide sticky-cta" onClick={() => setMode('quiz')}>
               Quiz me! →
             </button>
           }

@@ -10,6 +10,7 @@ import type { AssignmentAction } from './types';
  */
 
 export type Concept =
+  | 'LEAGUE_RULES'
   | 'FIELDING_YOUR_BALL'
   | 'COVERING_FIRST'
   | 'COVERING_SECOND'
@@ -30,6 +31,7 @@ export type Concept =
   | 'CALL_IT';
 
 export const CONCEPT_LABELS: Record<Concept, string> = {
+  LEAGUE_RULES: 'Your league rules',
   FIELDING_YOUR_BALL: 'Fielding your ball',
   COVERING_FIRST: 'Covering first',
   COVERING_SECOND: 'Covering second',

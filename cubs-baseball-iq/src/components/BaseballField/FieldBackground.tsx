@@ -35,7 +35,7 @@ function FieldBackgroundImpl() {
       <path d={wedge(R)} className="fb-track" />
       <path d={wedge(R - 3.2)} className="fb-grass" />
       <path d={wedge(R - 3.2)} fill="url(#mow)" />
-      <text x="50" y={H.y - R + 12} className="fb-watermark">CUBS</text>
+      <text x="50" y={H.y - R + 12} className="fb-watermark">BASEBALL IQ</text>
       {/* infield dirt */}
       <g clipPath="url(#fair)">
         <circle cx={m.x} cy={m.y} r={FIELD.infieldArcRadius} className="fb-dirt" />

@@ -3,7 +3,6 @@ import { buildScenario, sampleTimeline } from '../../animation/animationEngine';
 import { useTimelinePlayer } from '../../animation/useTimelinePlayer';
 import type { Question } from '../../baseball/questions';
 import { POSITION_NAMES, type DefensivePosition } from '../../baseball/types';
-import { scenarioById } from '../../data/scenarios';
 import { useApp } from '../../state/AppContext';
 import { BaseballField, type PinState } from '../BaseballField/BaseballField';
 import { Situation } from '../Layout/TopBar';
@@ -22,8 +21,8 @@ interface QuestionViewProps {
 
 /** QUIZ MODE: one question about one player. */
 export function QuestionView({ question: q, names, onAnswered, onNext, nextLabel }: QuestionViewProps) {
-  const { speed } = useApp();
-  const scenario = scenarioById(q.scenarioId);
+  const { speed, scenarios } = useApp();
+  const scenario = scenarios.find((s) => s.id === q.scenarioId)!;
   const { timeline, resolved } = useMemo(() => buildScenario(scenario, 'main'), [scenario]);
 
   // Where to freeze the play and ask.
@@ -38,9 +37,10 @@ export function QuestionView({ question: q, names, onAnswered, onNext, nextLabel
     return timeline.hitEnd;
   }, [q, resolved, timeline]);
 
+  const [replaying, setReplaying] = useState(false);
   const player = useTimelinePlayer(timeline, {
     speed,
-    stopAt,
+    stopAt: replaying ? undefined : stopAt,
     autoPlay: true,
     skipPauses: [...ALL_PAUSES],
   });
@@ -53,6 +53,7 @@ export function QuestionView({ question: q, names, onAnswered, onNext, nextLabel
   const [wrongChoices, setWrongChoices] = useState<string[]>([]);
 
   const asking = player.stopped && !done;
+  const rulesOnly = q.concept === 'LEAGUE_RULES';
   const name = q.position ? names[q.position] : '';
   const NAME = name.toUpperCase();
   const fill = (s: string) => s.replaceAll('{name}', name).replaceAll('{NAME}', NAME);
@@ -102,7 +103,7 @@ export function QuestionView({ question: q, names, onAnswered, onNext, nextLabel
 
   return (
     <div className="quiz">
-      <Situation lines={scenario.situation} />
+      <Situation lines={q.kind === 'CHOICE' && q.situation ? q.situation : scenario.situation} />
       <div className="quiz-q">
         {q.beforePitch && <div className="pre-tag">⏸ Before the pitch — think it through!</div>}
         <div className={`quiz-prompt ${prompt.length > 40 ? "quiz-prompt-long" : ""}`}>{prompt}</div>
@@ -113,7 +114,7 @@ export function QuestionView({ question: q, names, onAnswered, onNext, nextLabel
           </div>
         )}
       </div>
-      <div className="field-wrap">
+      {!rulesOnly && <div className="field-wrap">
         {!player.stopped && !done && <div className="caption">{frame.caption ?? 'Watch the play…'}</div>}
         <BaseballField
           frame={frame}
@@ -125,7 +126,7 @@ export function QuestionView({ question: q, names, onAnswered, onNext, nextLabel
           pinStates={pinStates}
           onTarget={answer}
         />
-      </div>
+      </div>}
       {feedback && (
         <QuizOverlay tone={feedback.tone} title={feedback.title} text={feedback.text}>
           {done && (
@@ -153,8 +154,8 @@ export function QuestionView({ question: q, names, onAnswered, onNext, nextLabel
           })}
         </div>
       )}
-      {done && player.done && (
-        <button className="btn btn-outline btn-wide" onClick={player.replay}>
+      {!rulesOnly && done && player.done && (
+        <button className="btn btn-outline btn-wide" onClick={() => { if (replaying) player.replay(); else setReplaying(true); }}>
           ↻ Watch again
         </button>
       )}

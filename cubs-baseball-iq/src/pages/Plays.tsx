@@ -1,5 +1,5 @@
 import { TopBar } from '../components/Layout/TopBar';
-import { SCENARIOS } from '../data/scenarios';
+import { useApp } from '../state/AppContext';
 import { go } from '../router';
 import type { Category } from '../baseball/types';
 
@@ -13,6 +13,7 @@ const GROUPS: { cat: Category; title: string }[] = [
 ];
 
 export function Plays() {
+  const { scenarios } = useApp();
   return (
     <div className="page">
       <TopBar back="/" title="All Plays" />
@@ -20,7 +21,7 @@ export function Plays() {
         <section key={g.cat}>
           <h2 className="section-title">{g.title}</h2>
           <div className="play-list">
-            {SCENARIOS.filter((s) => s.category === g.cat).map((s) => (
+            {scenarios.filter((s) => s.category === g.cat).map((s) => (
               <button key={s.id} className="play-item" onClick={() => go(`/play/${s.id}`)}>
                 <span className="play-1">{s.situation[0]}</span>
                 <span className="play-2">{s.situation[1]}</span>
