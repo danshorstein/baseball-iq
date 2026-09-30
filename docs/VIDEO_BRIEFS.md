@@ -16,7 +16,7 @@ The app already includes draft WebVTT captions timed to six five-second scenes. 
 
 ## Cover Your Base
 
-Files: cover-your-base.mp4, cover-your-base.vtt, cover-your-base.jpg
+Files: cover-your-base.mp4, cover-your-base.vtt, cover-your-base.jpg, cover-your-base-transcript.txt
 
 Teaching goal: One player fields the ball. Teammates cover the bases and back up the throw. Before the pitch, know which job is yours.
 
@@ -59,7 +59,7 @@ Voiceover: “Now try the play. Where should you go when the ball moves?”
 
 ## Back It Up
 
-Files: back-it-up.mp4, back-it-up.vtt, back-it-up.jpg
+Files: back-it-up.mp4, back-it-up.vtt, back-it-up.jpg, back-it-up-transcript.txt
 
 Teaching goal: A backup gets behind the intended receiver, along the throw’s path. That gives the defense another chance if the throw gets away.
 
@@ -102,7 +102,7 @@ Voiceover: “Your league sets the runner rules. Your job is preventing extra ba
 
 ## Get It In
 
-Files: get-it-in.mp4, get-it-in.vtt, get-it-in.jpg
+Files: get-it-in.mp4, get-it-in.vtt, get-it-in.jpg, get-it-in-transcript.txt
 
 Teaching goal: An outfielder gets the ball back to the infield through a cutoff or relay. A teammate backs up the outfielder while the other defenders cover bases.
 
@@ -145,7 +145,7 @@ Voiceover: “Listen to your teammates. Get the ball in and protect the bases.�
 
 ## Hold the Ball
 
-Files: hold-the-ball.mp4, hold-the-ball.vtt, hold-the-ball.jpg
+Files: hold-the-ball.mp4, hold-the-ball.vtt, hold-the-ball.jpg, hold-the-ball-transcript.txt
 
 Teaching goal: A throw needs a purpose. If a runner is already safe and there is no realistic out, secure the ball and stay ready rather than making a late throw.
 
@@ -188,7 +188,7 @@ Voiceover: “Make the next smart decision. Take a real out, or hold it.”
 
 ## Force or Tag?
 
-Files: force-or-tag.mp4, force-or-tag.vtt, force-or-tag.jpg
+Files: force-or-tag.mp4, force-or-tag.vtt, force-or-tag.jpg, force-or-tag-transcript.txt
 
 Teaching goal: Look at the runners and the bases behind them. A force lets a defender touch the base; without a force, the defender generally needs to tag the runner.
 
@@ -231,7 +231,7 @@ Voiceover: “A caught ball or another out can remove a force. Read the play.”
 
 ## Call It!
 
-Files: call-it.mp4, call-it.vtt, call-it.jpg
+Files: call-it.mp4, call-it.vtt, call-it.jpg, call-it-transcript.txt
 
 Teaching goal: Communicate early so one player handles the ball and the others can help. These examples use the closest defender; your coach may also teach a fly-ball priority system.
 
@@ -274,7 +274,7 @@ Voiceover: “Use a loud voice, keep watching the ball, and help your teammate.�
 
 ## Runner on Third
 
-Files: runner-on-third.mp4, runner-on-third.vtt, runner-on-third.jpg
+Files: runner-on-third.mp4, runner-on-third.vtt, runner-on-third.jpg, runner-on-third-transcript.txt
 
 Teaching goal: A runner on third makes the decision more important. Read the runner, the number of outs, and how much time you have. A fast grounder and a slowly fielded ball can call for different plays.
 
@@ -317,7 +317,7 @@ Voiceover: “There is no answer for every grounder. Read this play and choose.�
 
 ## It’s Hit to Me!
 
-Files: hit-to-me.mp4, hit-to-me.vtt, hit-to-me.jpg
+Files: hit-to-me.mp4, hit-to-me.vtt, hit-to-me.jpg, hit-to-me-transcript.txt
 
 Teaching goal: Prepare before the pitch. If you field the ball, know your likely next play and who will cover the base. Adjust that plan when the ball or runners change the situation.
 

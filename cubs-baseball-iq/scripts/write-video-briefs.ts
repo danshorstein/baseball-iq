@@ -1,4 +1,5 @@
 import { mkdir, writeFile } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
 import { LESSON_INTROS } from '../src/data/lessonIntros';
 const heading = `# Baseball IQ video production briefs
 
@@ -19,7 +20,7 @@ The app already includes draft WebVTT captions timed to six five-second scenes. 
 let output = heading;
 await mkdir(new URL('../public/videos/', import.meta.url), { recursive: true });
 for (const [id, intro] of Object.entries(LESSON_INTROS)) {
-  output += `\n## ${intro.title}\n\nFiles: ${id}.mp4, ${id}.vtt, ${id}.jpg\n\nTeaching goal: ${intro.overview}\n\n`;
+  output += `\n## ${intro.title}\n\nFiles: ${id}.mp4, ${id}.vtt, ${id}.jpg, ${id}-transcript.txt\n\nTeaching goal: ${intro.overview}\n\n`;
   let captions = 'WEBVTT\n\n';
   for (const [i, scene] of intro.scenes.entries()) {
     const from = `00:00:${String(i * 5).padStart(2, '0')}.000`;
@@ -27,8 +28,12 @@ for (const [id, intro] of Object.entries(LESSON_INTROS)) {
     output += `### ${i * 5}–${(i + 1) * 5} seconds\n\nVisual: ${scene.visual}\n\nVoiceover: “${scene.narration}”\n\n`;
     captions += `${i + 1}\n${from} --> ${to}\n${scene.narration}\n\n`;
   }
-  await writeFile(new URL(`../public/videos/${id}.vtt`, import.meta.url), captions.trimEnd() + '\n');
+  const captionPath = new URL(`../public/videos/${id}.vtt`, import.meta.url);
+  // Keep retimed production captions when a finished MP4 has been added.
+  if (!existsSync(captionPath) || !existsSync(new URL(`../public/videos/${id}.mp4`, import.meta.url))) {
+    await writeFile(captionPath, captions.trimEnd() + '\n');
+  }
 }
 output += `\n## Optional later videos\n\nAfter the eight lessons, useful extras would be a 30-second welcome (“BALL → BASE → BACKUP”), a setup walkthrough showing why team type and league rules are separate, and a batter-contact comparison showing a deeper versus shallower outfield. These are later content ideas; there are no dedicated video slots for them yet. Keep any setup walkthrough independent of Ponte Vedra or Julington Creek unless those leagues verify the exact division rules.\n\n## Add the finished assets\n\nPlace the MP4, VTT, and JPG together in cubs-baseball-iq/public/videos/. The lesson ID is the filename. Run npm run build:pages and commit the rebuilt root index.html plus videos/ when using branch-based Pages hosting, or let the included Pages workflow build and publish them. Restart the development server after adding a new MP4 so it discovers the new filename. Missing videos show a written intro; a failed video shows the transcript and lets the child continue.\n\nThe app does not require watching to the end. Playback has ordinary browser controls, captions, no autoplay, and a transcript. MP4s stay separate from the HTML bundle and load only on their lesson.\n`;
 await writeFile(new URL('../../docs/VIDEO_BRIEFS.md', import.meta.url), output);
-console.log('Wrote eight video briefs and draft captions.');
+console.log('Wrote eight video briefs and draft captions; preserved finished-video captions.');
