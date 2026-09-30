@@ -1,0 +1,52 @@
+import { TopBar } from '../components/Layout/TopBar';
+import { LESSONS } from '../data/lessons';
+import { go } from '../router';
+import { BALL_BASE_BACKUP, PRINCIPLES } from '../baseball/teachingRules';
+
+export function Home() {
+  return (
+    <div className="page">
+      <TopBar />
+      <section className="hero">
+        <div className="hero-kicker">Defense Trainer</div>
+        <h1 className="hero-title">
+          <span>CUBS</span> Baseball IQ
+        </h1>
+        <div className="bbb">
+          {BALL_BASE_BACKUP.map((s, i) => (
+            <div key={s.step} className="bbb-step">
+              <div className="bbb-word">{s.step}</div>
+              <div className="bbb-q">{s.question}</div>
+              {i < 2 && <div className="bbb-arrow">→</div>}
+            </div>
+          ))}
+        </div>
+        <button className="btn btn-red btn-big btn-wide" onClick={() => go('/practice')}>
+          ⚾ PRACTICE MY GAME
+        </button>
+        <p className="hero-sub">{PRINCIPLES.oneKid}</p>
+      </section>
+
+      <h2 className="section-title">Lessons</h2>
+      <div className="lessons">
+        {LESSONS.map((l) => (
+          <button key={l.id} className="lesson-card" onClick={() => go(`/lesson/${l.id}`)}>
+            <div className="lesson-num">{l.number}</div>
+            <div className="lesson-body">
+              <div className="lesson-title">
+                {l.title} <span aria-hidden>{l.emoji}</span>
+              </div>
+              <div className="lesson-tag">“{l.tagline}”</div>
+              <div className="lesson-meta">{l.scenarioIds.length} plays</div>
+            </div>
+            <div className="lesson-go">›</div>
+          </button>
+        ))}
+      </div>
+      <button className="btn btn-outline btn-wide" onClick={() => go('/plays')}>
+        📋 All plays
+      </button>
+      <footer className="foot muted small">For our Cubs 8U families. Not affiliated with MLB or the Chicago Cubs.</footer>
+    </div>
+  );
+}
