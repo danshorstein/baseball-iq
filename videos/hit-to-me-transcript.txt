@@ -1,26 +1,11 @@
-WEBVTT
-
-1
-00:00:00.300 --> 00:00:04.529
 Before the pitch, ask: if it comes to me, what is my play?
 
-2
-00:00:05.300 --> 00:00:10.263
 A grounder to the pitcher often means a controlled throw to first.
 
-3
-00:00:10.743 --> 00:00:15.229
 A slow roller to the catcher can mean the pitcher covers home.
 
-4
-00:00:15.743 --> 00:00:20.513
 If first base fields near the bag, stepping on first may work.
 
-5
-00:00:20.993 --> 00:00:25.721
 If first base moves away, the pitcher may cover for the throw.
 
-6
-00:00:26.201 --> 00:00:30.631
 Know your team's plan, then adjust to the ball and the runners.
-

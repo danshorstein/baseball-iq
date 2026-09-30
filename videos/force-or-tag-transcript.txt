@@ -1,30 +1,11 @@
-WEBVTT
-
-1
-00:00:00.300 --> 00:00:04.399
 Before you throw, ask: does this runner have to advance?
 
-2
-00:00:05.300 --> 00:00:10.007
 With a runner on first, the batter makes that runner go to second.
 
-3
-00:00:10.487 --> 00:00:14.809
 For that force out, hold the ball and touch second in time.
 
-4
-00:00:15.487 --> 00:00:19.852
 With only a runner on second, there is no force at third.
 
-5
-00:00:20.487 --> 00:00:24.765
 To get that runner out at third, tag the runner with the ball.
 
-6
-00:00:25.487 --> 00:00:29.424
-A caught ball or another out can remove a force.
-
-7
-00:00:29.454 --> 00:00:30.581
-Read the play.
-
+A caught ball or another out can remove a force. Read the play.
