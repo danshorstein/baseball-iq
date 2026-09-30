@@ -1,12 +1,12 @@
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 const base = new URL('../dist-pages/', import.meta.url);
-const types = { html: 'text/html; charset=utf-8', mp4: 'video/mp4', vtt: 'text/vtt; charset=utf-8', jpg: 'image/jpeg' };
+const types = { html: 'text/html; charset=utf-8', mp4: 'video/mp4', vtt: 'text/vtt; charset=utf-8', jpg: 'image/jpeg', txt: 'text/plain; charset=utf-8' };
 createServer(async (req, res) => {
   const path = new URL(req.url, 'http://localhost').pathname;
   if (path === '/') { res.writeHead(302, { Location: '/baseball-iq/' }); res.end(); return; }
   const name = path === '/baseball-iq/' ? 'index.html' : path.replace('/baseball-iq/', '');
-  if (!['index.html', 'cubs-baseball-iq.html'].includes(name) && !/^videos\/[a-z0-9-]+\.(mp4|vtt|jpg)$/.test(name)) { res.writeHead(404); res.end('Not found'); return; }
+  if (!['index.html', 'cubs-baseball-iq.html'].includes(name) && !/^videos\/[a-z0-9-]+\.(mp4|vtt|jpg|txt)$/.test(name)) { res.writeHead(404); res.end('Not found'); return; }
   try {
     const file = await readFile(new URL(name, base));
     res.setHeader('Content-Type', types[name.split('.').at(-1)]);

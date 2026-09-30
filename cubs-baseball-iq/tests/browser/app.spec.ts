@@ -1,4 +1,7 @@
 import { test, expect } from '@playwright/test';
+import { existsSync } from 'node:fs';
+
+const hasLessonVideo = existsSync(new URL('../../public/videos/cover-your-base.mp4', import.meta.url));
 
 test('generic home, mobile layout and position selector work under a GitHub project path', async ({ page }) => {
   const errors: string[] = []; page.on('pageerror', (e) => errors.push(e.message));
@@ -137,38 +140,44 @@ test('legacy entry point redirects while preserving the chosen play', async ({ p
 });
 
 
-test('every lesson has a useful intro and can proceed without an MP4', async ({ page }) => {
+test('every lesson has a useful intro and can proceed to practice', async ({ page }) => {
   for (const id of ['cover-your-base','back-it-up','get-it-in','hold-the-ball','force-or-tag','call-it','runner-on-third','hit-to-me']) {
     await page.goto(`./#/lesson/${id}`);
     await expect(page.getByRole('region', { name: 'Lesson introduction' })).toBeVisible();
     await page.locator('.intro-transcript summary').click();
-    await expect(page.locator('.intro-transcript p')).toBeVisible();
+    await expect(page.locator('.intro-transcript p').first()).toBeVisible();
     await page.getByRole('button', { name: /Start lesson|Continue to practice/ }).click();
     await expect(page.getByRole('button', { name: 'Quiz me!' })).toBeVisible();
     await expect(page.locator('.pm')).toHaveCount(9);
   }
 });
 
-if (process.env.TEST_LESSON_VIDEO) test('MP4 intro supports captions and a transcript without autoplay', async ({ page }) => {
+if (hasLessonVideo || process.env.TEST_LESSON_VIDEO) test('MP4 intro supports captions and a transcript without autoplay', async ({ page }) => {
   await page.goto('./#/lesson/cover-your-base');
   const video = page.locator('video');
   await expect(video).toBeVisible();
   await expect(video).toHaveAttribute('controls', '');
   await expect(video).not.toHaveAttribute('autoplay');
   await expect(video.locator('track')).toHaveAttribute('kind', 'captions');
+  await expect(video).toHaveAttribute('poster', './videos/cover-your-base.jpg');
   await expect.poll(() => video.evaluate((v: HTMLVideoElement) => v.readyState)).toBeGreaterThanOrEqual(1);
   await video.evaluate((v: HTMLVideoElement) => v.play());
   await expect.poll(() => video.evaluate((v: HTMLVideoElement) => v.currentTime)).toBeGreaterThan(0);
+  await expect.poll(() => video.evaluate((v: HTMLVideoElement) => v.textTracks[0]?.cues?.length ?? 0)).toBe(10);
+  await video.evaluate((v: HTMLVideoElement) => { v.currentTime = 4; });
+  await expect.poll(() => video.evaluate((v: HTMLVideoElement) => (v.textTracks[0].activeCues?.[0] as VTTCue | undefined)?.text)).toBe('Start with the ball.');
+  await page.locator('.intro-transcript summary').click();
+  await expect(page.locator('.intro-transcript')).toContainText('First base stays ready.');
   await page.getByRole('button', { name: 'Continue to practice' }).click();
   await expect(page.getByRole('button', { name: 'Quiz me!' })).toBeVisible();
 });
 
-if (process.env.TEST_LESSON_VIDEO) test('failed MP4 keeps the transcript and lesson available', async ({ page }) => {
+if (hasLessonVideo || process.env.TEST_LESSON_VIDEO) test('failed MP4 keeps the transcript and lesson available', async ({ page }) => {
   await page.route('**/videos/cover-your-base.mp4', (route) => route.abort());
   await page.goto('./#/lesson/cover-your-base');
   await expect(page.getByText('The video could not load.', { exact: false })).toBeVisible();
   await page.locator('.intro-transcript summary').click();
-  await expect(page.locator('.intro-transcript p')).toBeVisible();
+  await expect(page.locator('.intro-transcript p').first()).toBeVisible();
   await page.getByRole('button', { name: 'Continue to practice' }).click();
   await expect(page.getByRole('button', { name: 'Quiz me!' })).toBeVisible();
 });
